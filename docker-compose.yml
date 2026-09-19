@@ -1,0 +1,36 @@
+services:
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: vahan-airflow
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - airflow_home:/opt/airflow
+      - ./dags:/opt/airflow/dags
+      - ./data:/opt/airflow/data
+      - ./src:/opt/airflow/src
+      - ./sql:/opt/airflow/sql
+
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__TEST_CONNECTION: "Enabled"
+
+      SNOWFLAKE_ACCOUNT: "${SNOWFLAKE_ACCOUNT}"
+      SNOWFLAKE_USER: "${SNOWFLAKE_USER}"
+      SNOWFLAKE_PASSWORD: "${SNOWFLAKE_PASSWORD}"
+      SNOWFLAKE_WAREHOUSE: "VAHAN_WH"
+      SNOWFLAKE_DATABASE: "VAHAN_MARKET_DB"
+      SNOWFLAKE_SCHEMA: "MARKET_SCHEMA"
+
+      AIRFLOW_CONN_SNOWFLAKE_DEFAULT: "snowflake://${SNOWFLAKE_USER}:${SNOWFLAKE_PASSWORD}@nuiimyk-ue77748/?account=nuiimyk-ue77748&warehouse=VAHAN_WH&database=VAHAN_MARKET_DB&schema=MARKET_SCHEMA&role=ACCOUNTADMIN"
+
+    command: standalone
+
+volumes:
+  airflow_home:
